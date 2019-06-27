@@ -8,6 +8,7 @@ namespace WalletWasabi.Gui.Controls.WalletExplorer
 	public class TransactionInfo : ReactiveObject
 	{
 		private bool _confirmed;
+		private bool _rbf;
 		private DateTimeOffset _dateTime;
 		private string _amountBtc;
 		private string _label;
@@ -23,6 +24,12 @@ namespace WalletWasabi.Gui.Controls.WalletExplorer
 		{
 			get => _confirmed;
 			set => this.RaiseAndSetIfChanged(ref _confirmed, value);
+		}
+
+		public bool IsRBF
+		{
+			get => _rbf;
+			set => this.RaiseAndSetIfChanged(ref _rbf, value);
 		}
 
 		public string AmountBtc

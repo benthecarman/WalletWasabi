@@ -35,6 +35,7 @@ namespace WalletWasabi.Gui.Controls.WalletExplorer
 
 		private string _buildTransactionButtonText;
 		private bool _isMax;
+		private bool _isRBF;
 		private string _amount;
 		private int _feeTarget;
 		private int _minimumFeeTarget;
@@ -85,6 +86,7 @@ namespace WalletWasabi.Gui.Controls.WalletExplorer
 			AllSelectedAmount = Money.Zero;
 			UsdExchangeRate = Global.Synchronizer?.UsdExchangeRate ?? UsdExchangeRate;
 			IsMax = false;
+			IsRBF = false;
 			LabelToolTip = "Start labelling today and your privacy will thank you tomorrow!";
 			Amount = "0.0";
 		}
@@ -307,7 +309,7 @@ namespace WalletWasabi.Gui.Controls.WalletExplorer
 						MainWindowViewModel.Instance.StatusBar.TryRemoveStatus(StatusBarStatus.DequeuingSelectedCoins);
 					}
 
-					var result = await Task.Run(() => Global.WalletService.BuildTransaction(Password, new[] { operation }, FeeTarget, allowUnconfirmed: true, allowedInputs: selectedCoinReferences));
+					var result = await Task.Run(() => Global.WalletService.BuildTransaction(Password, new[] { operation }, FeeTarget, allowUnconfirmed: true, allowedInputs: selectedCoinReferences, rbf: IsRBF));
 
 					if (IsTransactionBuilder)
 					{
@@ -816,6 +818,12 @@ namespace WalletWasabi.Gui.Controls.WalletExplorer
 		{
 			get => _isMax;
 			set => this.RaiseAndSetIfChanged(ref _isMax, value);
+		}
+
+		public bool IsRBF
+		{
+			get => _isRBF;
+			set => this.RaiseAndSetIfChanged(ref _isRBF, value);
 		}
 
 		public string Amount

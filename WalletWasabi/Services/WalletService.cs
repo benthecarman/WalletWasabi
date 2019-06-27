@@ -1036,7 +1036,8 @@ namespace WalletWasabi.Services
 														bool allowUnconfirmed = false,
 														int? subtractFeeFromAmountIndex = null,
 														Script customChange = null,
-														IEnumerable<TxoRef> allowedInputs = null)
+														IEnumerable<TxoRef> allowedInputs = null,
+														bool rbf = false)
 		{
 			password = password ?? ""; // Correction.
 			toSend = Guard.NotNullOrEmpty(nameof(toSend), toSend);
@@ -1257,6 +1258,8 @@ namespace WalletWasabi.Services
 			{
 				builder = builder.Send(output.scriptPubKey, output.amount);
 			}
+
+			builder.OptInRBF = rbf;
 
 			Transaction tx = builder
 				.SetChange(changeScriptPubKey)

@@ -22,6 +22,7 @@ namespace WalletWasabi.Gui.Controls.WalletExplorer
 		private SortOrder _dateSortDirection;
 		private SortOrder _amountSortDirection;
 		private SortOrder _transactionSortDirection;
+		private SortOrder _rbfDirection;
 
 		public ReactiveCommand<Unit, Unit> SortCommand { get; }
 
@@ -100,6 +101,7 @@ namespace WalletWasabi.Gui.Controls.WalletExplorer
 					Confirmed = txr.height.Type == HeightType.Chain,
 					AmountBtc = $"{txr.amount.ToString(fplus: true, trimExcessZero: true)}",
 					Label = txr.label,
+					IsRBF = txr.isRBF,
 					TransactionId = txr.transactionId.ToString()
 				}).Select(ti => new TransactionViewModel(ti));
 
@@ -121,12 +123,12 @@ namespace WalletWasabi.Gui.Controls.WalletExplorer
 			}
 		}
 
-		private List<(DateTimeOffset dateTime, Height height, Money amount, string label, uint256 transactionId)> BuildTxRecordList()
+		private List<(DateTimeOffset dateTime, Height height, Money amount, string label, uint256 transactionId, bool isRBF)> BuildTxRecordList()
 		{
 			var walletService = Global.WalletService;
 
 			List<Transaction> trs = new List<Transaction>();
-			var txRecordList = new List<(DateTimeOffset dateTime, Height height, Money amount, string label, uint256 transactionId)>();
+			var txRecordList = new List<(DateTimeOffset dateTime, Height height, Money amount, string label, uint256 transactionId, bool isRBF)>();
 
 			if (walletService == null)
 			{
@@ -163,12 +165,12 @@ namespace WalletWasabi.Gui.Controls.WalletExplorer
 				{
 					txRecordList.Remove(found);
 					var foundLabel = found.label != string.Empty ? found.label + ", " : "";
-					var newRecord = (dateTime, found.height, found.amount + coin.Amount, $"{foundLabel}{coin.Label}", coin.TransactionId);
+					var newRecord = (dateTime, found.height, found.amount + coin.Amount, $"{foundLabel}{coin.Label}", coin.TransactionId, coin.IsReplaceable);
 					txRecordList.Add(newRecord);
 				}
 				else
 				{
-					txRecordList.Add((dateTime, coin.Height, coin.Amount, coin.Label, coin.TransactionId));
+					txRecordList.Add((dateTime, coin.Height, coin.Amount, coin.Label, coin.TransactionId, coin.IsReplaceable));
 				}
 
 				if (coin.SpenderTransactionId != null)
@@ -208,12 +210,12 @@ namespace WalletWasabi.Gui.Controls.WalletExplorer
 					if (foundSpenderCoin != default) // if found
 					{
 						txRecordList.Remove(foundSpenderCoin);
-						var newRecord = (dateTime, foundSpenderTransaction.Height, foundSpenderCoin.amount - coin.Amount, foundSpenderCoin.label, coin.SpenderTransactionId);
+						var newRecord = (dateTime, foundSpenderTransaction.Height, foundSpenderCoin.amount - coin.Amount, foundSpenderCoin.label, coin.SpenderTransactionId, coin.IsReplaceable);
 						txRecordList.Add(newRecord);
 					}
 					else
 					{
-						txRecordList.Add((dateTime, foundSpenderTransaction.Height, (Money.Zero - coin.Amount), "", coin.SpenderTransactionId));
+						txRecordList.Add((dateTime, foundSpenderTransaction.Height, (Money.Zero - coin.Amount), "", coin.SpenderTransactionId, coin.IsReplaceable));
 					}
 				}
 			}
@@ -243,6 +245,7 @@ namespace WalletWasabi.Gui.Controls.WalletExplorer
 				{
 					AmountSortDirection = SortOrder.None;
 					TransactionSortDirection = SortOrder.None;
+					RBFDirection = SortOrder.None;
 				}
 			}
 		}
@@ -257,6 +260,7 @@ namespace WalletWasabi.Gui.Controls.WalletExplorer
 				{
 					DateSortDirection = SortOrder.None;
 					TransactionSortDirection = SortOrder.None;
+					RBFDirection = SortOrder.None;
 				}
 			}
 		}
@@ -271,6 +275,22 @@ namespace WalletWasabi.Gui.Controls.WalletExplorer
 				{
 					AmountSortDirection = SortOrder.None;
 					DateSortDirection = SortOrder.None;
+					RBFDirection = SortOrder.None;
+				}
+			}
+		}
+
+		public SortOrder RBFDirection
+		{
+			get => _rbfDirection;
+			set
+			{
+				this.RaiseAndSetIfChanged(ref _rbfDirection, value);
+				if (value != SortOrder.None)
+				{
+					AmountSortDirection = SortOrder.None;
+					DateSortDirection = SortOrder.None;
+					TransactionSortDirection = SortOrder.None;
 				}
 			}
 		}
@@ -313,6 +333,19 @@ namespace WalletWasabi.Gui.Controls.WalletExplorer
 
 					case SortOrder.Decreasing:
 						Transactions = new ObservableCollection<TransactionViewModel>(_transactions.OrderByDescending(t => t.DateTime));
+						break;
+				}
+			}
+			else if (RBFDirection != SortOrder.None)
+			{
+				switch (RBFDirection)
+				{
+					case SortOrder.Increasing:
+						Transactions = new ObservableCollection<TransactionViewModel>(_transactions.OrderBy(t => t.IsRBF));
+						break;
+
+					case SortOrder.Decreasing:
+						Transactions = new ObservableCollection<TransactionViewModel>(_transactions.OrderByDescending(t => t.IsRBF));
 						break;
 				}
 			}

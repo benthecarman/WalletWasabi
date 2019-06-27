@@ -28,6 +28,7 @@ namespace WalletWasabi.Gui.Controls.WalletExplorer
 			this.RaisePropertyChanged(nameof(AmountBtc));
 			this.RaisePropertyChanged(nameof(TransactionId));
 			this.RaisePropertyChanged(nameof(DateTime));
+			this.RaisePropertyChanged(nameof(IsRBF));
 		}
 
 		public string DateTime => Model.DateTime.ToString("yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture);
@@ -41,6 +42,8 @@ namespace WalletWasabi.Gui.Controls.WalletExplorer
 		public string Label => Model.Label;
 
 		public string TransactionId => Model.TransactionId;
+
+		public string IsRBF => Model.IsRBF ? "Yes" : "No";
 
 		public bool ClipboardNotificationVisible
 		{

@@ -89,6 +89,13 @@
                     </DrawingPresenter.Drawing>
                   </DrawingPresenter>
                 </Grid>
+
+                <CheckBox IsChecked="{Binding IsRBF,Mode=TwoWay}">
+                  <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Replace by fee" ToolTip.Tip="Replace by fee allows you to change the fee of an unconfirmed transaction"/>
+                  </StackPanel>
+                </CheckBox>
+
               </StackPanel>
               <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Spacing="4">
                 <TextBlock Text="Confirmation Expected In:" VerticalAlignment="Center" />
