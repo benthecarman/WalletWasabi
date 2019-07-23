@@ -50,6 +50,7 @@ namespace WalletWasabi.Gui.Controls.WalletExplorer
 		public ReactiveCommand<Unit, Unit> SelectNonPrivateCheckBoxCommand { get; }
 		public ReactiveCommand<Unit, Unit> SortCommand { get; }
 		public ReactiveCommand<Unit, Unit> InitList { get; }
+		public ReactiveCommand<Unit, Unit> EditAnonymityCommand { get; }
 
 		public event EventHandler DequeueCoinsPressed;
 
@@ -277,6 +278,11 @@ namespace WalletWasabi.Gui.Controls.WalletExplorer
 					StatusSortDirection = SortOrder.None;
 					ClustersSortDirection = SortOrder.None;
 				}
+			});
+
+			EditAnonymityCommand = ReactiveCommand.Create(() =>
+			{
+				SelectedCoin.InEditMode = true;
 			});
 
 			EnqueueCoin = ReactiveCommand.Create(() =>

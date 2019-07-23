@@ -3,10 +3,12 @@ using ReactiveUI;
 using System;
 using System.Globalization;
 using System.Linq;
+using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using WalletWasabi.Gui.Models;
 using WalletWasabi.Gui.ViewModels;
+using WalletWasabi.KeyManagement;
 using WalletWasabi.Models;
 using WalletWasabi.Models.ChaumianCoinJoin;
 
@@ -17,6 +19,9 @@ namespace WalletWasabi.Gui.Controls.WalletExplorer
 		public CompositeDisposable Disposables { get; set; }
 
 		private bool _isSelected;
+		private bool _inEditMode;
+		private string _customAnonymitySet;
+		private int _anonymitySet;
 		private SmartCoinStatus _status;
 		private ObservableAsPropertyHelper<bool> _coinJoinInProgress;
 		private ObservableAsPropertyHelper<bool> _unspent;
@@ -25,10 +30,34 @@ namespace WalletWasabi.Gui.Controls.WalletExplorer
 		private CoinListViewModel _owner;
 		public Global Global => _owner.Global;
 
+		public ReactiveCommand<Unit, Unit> SetAnonymitySetCommand { get; }
+
 		public CoinViewModel(CoinListViewModel owner, SmartCoin model)
 		{
 			Model = model;
 			_owner = owner;
+			AnonymitySet = model.AnonymitySet;
+
+			SetAnonymitySetCommand = ReactiveCommand.Create(() =>
+			{
+				if (InEditMode && CustomAnonymitySet != null)
+				{
+					InEditMode = false;
+
+					if (uint.TryParse(CustomAnonymitySet, out var newAnon))
+					{
+						AnonymitySet = Model.AnonymitySet = (int) newAnon;
+
+						KeyManager keyManager = Global.WalletService.KeyManager;
+						HdPubKey hdPubKey = keyManager.GetKeys(x => Model.HdPubKey == x).FirstOrDefault();
+
+						if (hdPubKey != default)
+						{
+							hdPubKey.SetAnonymitySet((int) newAnon, keyManager);
+						}
+					}
+				}
+			});
 		}
 
 		public void SubscribeEvents()
@@ -167,7 +196,11 @@ namespace WalletWasabi.Gui.Controls.WalletExplorer
 
 		public uint OutputIndex => Model.Index;
 
-		public int AnonymitySet => Model.AnonymitySet;
+		public int AnonymitySet
+		{
+			get => _anonymitySet;
+			set => this.RaiseAndSetIfChanged(ref _anonymitySet, value);
+		}
 
 		public string InCoinJoin => Model.CoinJoinInProgress ? "Yes" : "No";
 
@@ -176,6 +209,18 @@ namespace WalletWasabi.Gui.Controls.WalletExplorer
 		public string PubKey => Model.HdPubKey.PubKey.ToString();
 
 		public string KeyPath => Model.HdPubKey.FullKeyPath.ToString();
+
+		public string CustomAnonymitySet
+		{
+			get => _customAnonymitySet;
+			set => this.RaiseAndSetIfChanged(ref _customAnonymitySet, value);
+		}
+
+		public bool InEditMode
+		{
+			get => _inEditMode;
+			set => this.RaiseAndSetIfChanged(ref _inEditMode, value);
+		}
 
 		public SmartCoinStatus Status
 		{
