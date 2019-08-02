@@ -4,6 +4,7 @@ namespace WalletWasabi.KeyManagement
 	{
 		Standard,
 		CoinJoin,
-		CoinJoinChange
+		CoinJoinChange,
+		Deanonymized
 	}
 }

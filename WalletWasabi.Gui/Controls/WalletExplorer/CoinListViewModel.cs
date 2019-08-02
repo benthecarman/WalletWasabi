@@ -43,6 +43,7 @@ namespace WalletWasabi.Gui.Controls.WalletExplorer
 		private bool _labelExposeCommonOwnershipWarning;
 		public Global Global { get; }
 		public CoinListContainerType CoinListContainerType { get; }
+		public ReactiveCommand<Unit, Unit> MarkCoinDeanonymized { get; }
 		public ReactiveCommand<Unit, Unit> EnqueueCoin { get; }
 		public ReactiveCommand<Unit, Unit> DequeueCoin { get; }
 		public ReactiveCommand<Unit, Unit> SelectAllCheckBoxCommand { get; }
@@ -298,6 +299,16 @@ namespace WalletWasabi.Gui.Controls.WalletExplorer
 				DequeueCoinsPressed?.Invoke(this, EventArgs.Empty);
 			}, this.WhenAnyValue(x => x.CanDeqeue)
 				.ObserveOn(RxApp.MainThreadScheduler));
+
+			MarkCoinDeanonymized = ReactiveCommand.Create(() =>
+			{
+				if (SelectedCoin is null)
+				{
+					return;
+				}
+
+				SelectedCoin.SetDeanonymized();
+			});
 
 			SelectAllCheckBoxCommand = ReactiveCommand.Create(() =>
 			{

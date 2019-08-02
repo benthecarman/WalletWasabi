@@ -636,13 +636,22 @@ namespace WalletWasabi.Services
 					var anonset = tx.Transaction.GetAnonymitySet(i);
 					if (spentOwnCoins.Count != 0)
 					{
-						anonset += spentOwnCoins.Min(x => x.AnonymitySet) - 1; // Minus 1, because do not count own.
+						var nonDeanonCoins = spentOwnCoins.Where(x => x.LabelType != LabelType.Deanonymized).ToList();
+						if (nonDeanonCoins.Count != 0)
+						{
+							anonset += nonDeanonCoins.Min(x => x.AnonymitySet) - 1; // Minus 1, because do not count own.
+						}
 
 						// Cleanup exposed links where the txo has been spent.
 						foreach (var input in spentOwnCoins.Select(x => x.GetTxoRef()))
 						{
 							ChaumianClient.ExposedLinks.TryRemove(input, out _);
 						}
+					}
+
+					if (foundKey.LabelType == LabelType.Deanonymized)
+					{
+						anonset = 1;
 					}
 
 					if (output.Value <= ServiceConfiguration.DustThreshold)
@@ -1034,7 +1043,8 @@ namespace WalletWasabi.Services
 														bool allowUnconfirmed = false,
 														int? subtractFeeFromAmountIndex = null,
 														Script customChange = null,
-														IEnumerable<TxoRef> allowedInputs = null)
+														IEnumerable<TxoRef> allowedInputs = null,
+														LabelType changeLabelType = LabelType.Standard)
 		{
 			password = password ?? ""; // Correction.
 			toSend = Guard.NotNullOrEmpty(nameof(toSend), toSend);
@@ -1183,7 +1193,7 @@ namespace WalletWasabi.Services
 				KeyManager.AssertLockedInternalKeysIndexed(14);
 				var changeHdPubKey = KeyManager.GetKeys(KeyState.Clean, true).RandomElement();
 
-				changeHdPubKey.SetLabel(changeLabel, LabelType.Standard, KeyManager);
+				changeHdPubKey.SetLabel(changeLabel, changeLabelType, KeyManager);
 				changeScriptPubKey = changeHdPubKey.P2wpkhScript;
 			}
 			else
@@ -1265,8 +1275,19 @@ namespace WalletWasabi.Services
 			for (var i = 0U; i < tx.Outputs.Count; i++)
 			{
 				TxOut output = tx.Outputs[i];
-				var anonset = (tx.GetAnonymitySet(i) + spentCoins.Min(x => x.AnonymitySet)) - 1; // Minus 1, because count own only once.
 				var foundKey = KeyManager.GetKeys(KeyState.Clean).FirstOrDefault(x => output.ScriptPubKey == x.P2wpkhScript);
+				var anonset = tx.GetAnonymitySet(i) - 1; // Minus 1, because count own only once.
+				var nonDeanonCoins = spentCoins.Where(x => x.LabelType != LabelType.Deanonymized).ToList();
+
+				if (foundKey?.LabelType == LabelType.Deanonymized)
+				{
+					anonset = 1;
+				}
+				else if (nonDeanonCoins.Count > 0)
+				{
+					anonset += nonDeanonCoins.Min(x => x.AnonymitySet);
+				}
+
 				var coin = new SmartCoin(tx.GetHash(), i, output.ScriptPubKey, output.Value, tx.Inputs.ToTxoRefs().ToArray(), Height.Unknown, tx.RBF, anonset, pubKey: foundKey);
 
 				if (foundKey != null)

@@ -36,6 +36,7 @@ namespace WalletWasabi.Gui.Controls.WalletExplorer
 
 		private string _buildTransactionButtonText;
 		private bool _isMax;
+		private bool _isDeanonymizing;
 		private string _amountText;
 		private int _feeTarget;
 		private int _minimumFeeTarget;
@@ -311,7 +312,9 @@ namespace WalletWasabi.Gui.Controls.WalletExplorer
 						MainWindowViewModel.Instance.StatusBar.TryRemoveStatus(StatusBarStatus.DequeuingSelectedCoins);
 					}
 
-					var result = await Task.Run(() => Global.WalletService.BuildTransaction(Password, new[] { operation }, FeeTarget, allowUnconfirmed: true, allowedInputs: selectedCoinReferences));
+					LabelType changeLabelType = IsDeanonymizing ? LabelType.Deanonymized : LabelType.Standard;
+
+					var result = await Task.Run(() => Global.WalletService.BuildTransaction(Password, new[] { operation }, FeeTarget, allowUnconfirmed: true, allowedInputs: selectedCoinReferences, changeLabelType: changeLabelType));
 
 					if (IsTransactionBuilder)
 					{
@@ -395,6 +398,7 @@ namespace WalletWasabi.Gui.Controls.WalletExplorer
 				}
 				catch (Exception ex)
 				{
+					Console.WriteLine(ex.StackTrace);
 					SetWarningMessage(ex.ToTypeMessageString());
 				}
 				finally
@@ -803,6 +807,12 @@ namespace WalletWasabi.Gui.Controls.WalletExplorer
 		{
 			get => _isMax;
 			set => this.RaiseAndSetIfChanged(ref _isMax, value);
+		}
+
+		public bool IsDeanonymizing
+		{
+			get => _isDeanonymizing;
+			set => this.RaiseAndSetIfChanged(ref _isDeanonymizing, value);
 		}
 
 		public string AmountText

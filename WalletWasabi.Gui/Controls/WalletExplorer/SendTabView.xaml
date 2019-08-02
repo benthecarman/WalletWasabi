@@ -107,6 +107,7 @@
               </Button>
               <Grid></Grid>
             </DockPanel>
+            <CheckBox Content="Deanonymizing Transaction?" IsChecked="{Binding IsDeanonymizing}" />
           </StackPanel>
           <TextBlock Text="{Binding WarningMessage}" Classes="warningMessage" />
           <TextBlock Text="{Binding SuccessMessage}" Classes="validationMessage" Foreground="Green" />

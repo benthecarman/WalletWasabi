@@ -148,7 +148,7 @@ namespace WalletWasabi.Models
 		public int AnonymitySet
 		{
 			get => _anonymitySet;
-			private set => RaiseAndSetIfChanged(ref _anonymitySet, value);
+			set => RaiseAndSetIfChanged(ref _anonymitySet, value);
 		}
 
 		[JsonProperty]

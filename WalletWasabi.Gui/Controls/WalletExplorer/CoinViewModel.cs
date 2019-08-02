@@ -7,6 +7,7 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using WalletWasabi.Gui.Models;
 using WalletWasabi.Gui.ViewModels;
+using WalletWasabi.KeyManagement;
 using WalletWasabi.Models;
 using WalletWasabi.Models.ChaumianCoinJoin;
 
@@ -176,6 +177,14 @@ namespace WalletWasabi.Gui.Controls.WalletExplorer
 		public string PubKey => Model.HdPubKey.PubKey.ToString();
 
 		public string KeyPath => Model.HdPubKey.FullKeyPath.ToString();
+
+		public void SetDeanonymized()
+		{
+			Model.LabelType = LabelType.Deanonymized;
+			Model.AnonymitySet = 1;
+
+			this.RaisePropertyChanged(nameof(AnonymitySet));
+		}
 
 		public SmartCoinStatus Status
 		{
