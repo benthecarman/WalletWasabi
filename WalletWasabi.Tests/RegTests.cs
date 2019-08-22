@@ -372,7 +372,7 @@ namespace WalletWasabi.Tests
 		{
 			(string password, RPCClient rpc, Network network, CcjCoordinator coordinator, ServiceConfiguration serviceConfiguration, BitcoinStore bitcoinStore, Backend.Global global) = await InitializeTestEnvironmentAsync(1);
 
-			var keyManager = KeyManager.CreateNew(out _, password);
+			var keyManager = KeyManager.CreateNew(out _, password, Network.RegTest);
 
 			// Mine some coins, make a few bech32 transactions then make it confirm.
 			await rpc.GenerateAsync(1);
@@ -537,7 +537,7 @@ namespace WalletWasabi.Tests
 			var synchronizer = new WasabiSynchronizer(rpc.Network, bitcoinStore, new Uri(RegTestFixture.BackendEndPoint), null);
 
 			// 4. Create key manager service.
-			var keyManager = KeyManager.CreateNew(out _, password);
+			var keyManager = KeyManager.CreateNew(out _, password, Network.RegTest);
 
 			// 5. Create chaumian coinjoin client.
 			var chaumianClient = new CcjClient(synchronizer, rpc.Network, keyManager, new Uri(RegTestFixture.BackendEndPoint), null);
@@ -768,7 +768,7 @@ namespace WalletWasabi.Tests
 			var synchronizer = new WasabiSynchronizer(rpc.Network, bitcoinStore, new Uri(RegTestFixture.BackendEndPoint), null);
 
 			// 4. Create key manager service.
-			var keyManager = KeyManager.CreateNew(out _, password);
+			var keyManager = KeyManager.CreateNew(out _, password, Network.RegTest);
 
 			// 5. Create chaumian coinjoin client.
 			var chaumianClient = new CcjClient(synchronizer, rpc.Network, keyManager, new Uri(RegTestFixture.BackendEndPoint), null);
@@ -1241,7 +1241,7 @@ namespace WalletWasabi.Tests
 			var synchronizer = new WasabiSynchronizer(rpc.Network, bitcoinStore, new Uri(RegTestFixture.BackendEndPoint), null);
 
 			// 4. Create key manager service.
-			var keyManager = KeyManager.CreateNew(out _, password);
+			var keyManager = KeyManager.CreateNew(out _, password, Network.RegTest);
 
 			// 5. Create chaumian coinjoin client.
 			var chaumianClient = new CcjClient(synchronizer, rpc.Network, keyManager, new Uri(RegTestFixture.BackendEndPoint), null);
@@ -1404,7 +1404,7 @@ namespace WalletWasabi.Tests
 			var synchronizer = new WasabiSynchronizer(rpc.Network, bitcoinStore, new Uri(RegTestFixture.BackendEndPoint), null);
 
 			// 4. Create key manager service.
-			var keyManager = KeyManager.CreateNew(out _, password);
+			var keyManager = KeyManager.CreateNew(out _, password, Network.RegTest);
 
 			// 5. Create chaumian coinjoin client.
 			var chaumianClient = new CcjClient(synchronizer, rpc.Network, keyManager, new Uri(RegTestFixture.BackendEndPoint), null);
@@ -1567,7 +1567,7 @@ namespace WalletWasabi.Tests
 			var synchronizer = new WasabiSynchronizer(rpc.Network, bitcoinStore, new Uri(RegTestFixture.BackendEndPoint), null);
 
 			// 4. Create key manager service.
-			var keyManager = KeyManager.CreateNew(out _, password);
+			var keyManager = KeyManager.CreateNew(out _, password, Network.RegTest);
 
 			// 5. Create chaumian coinjoin client.
 			var chaumianClient = new CcjClient(synchronizer, rpc.Network, keyManager, new Uri(RegTestFixture.BackendEndPoint), null);
@@ -1735,7 +1735,7 @@ namespace WalletWasabi.Tests
 			var synchronizer = new WasabiSynchronizer(rpc.Network, bitcoinStore, new Uri(RegTestFixture.BackendEndPoint), null);
 
 			// 4. Create key manager service.
-			var keyManager = KeyManager.CreateNew(out _, password);
+			var keyManager = KeyManager.CreateNew(out _, password, Network.RegTest);
 
 			// 5. Create chaumian coinjoin client.
 			var chaumianClient = new CcjClient(synchronizer, rpc.Network, keyManager, new Uri(RegTestFixture.BackendEndPoint), null);
@@ -3102,7 +3102,7 @@ namespace WalletWasabi.Tests
 
 				var amount = Money.Coins((decimal)damount);
 
-				var keyManager = KeyManager.CreateNew(out _, password);
+				var keyManager = KeyManager.CreateNew(out _, password, Network.RegTest);
 				var key = keyManager.GenerateNewKey("foo", KeyState.Clean, false);
 				var bech = key.GetP2wpkhAddress(network);
 				var txId = await rpc.SendToAddressAsync(bech, amount, replaceable: false);
@@ -3183,7 +3183,7 @@ namespace WalletWasabi.Tests
 			await coordinator.RoundConfig.UpdateOrDefaultAsync(roundConfig, toFile: true);
 			coordinator.AbortAllRoundsInInputRegistration(nameof(RegTests), "");
 			await rpc.GenerateAsync(3); // So to make sure we have enough money.
-			var keyManager = KeyManager.CreateNew(out _, password);
+			var keyManager = KeyManager.CreateNew(out _, password, Network.RegTest);
 			var key1 = keyManager.GenerateNewKey("foo", KeyState.Clean, false);
 			var key2 = keyManager.GenerateNewKey("bar", KeyState.Clean, false);
 			var key3 = keyManager.GenerateNewKey("baz", KeyState.Clean, false);
@@ -3360,9 +3360,9 @@ namespace WalletWasabi.Tests
 			var synchronizer2 = new WasabiSynchronizer(network, bitcoinStore, new Uri(RegTestFixture.BackendEndPoint), null);
 
 			// 4. Create key manager service.
-			var keyManager = KeyManager.CreateNew(out _, password);
+			var keyManager = KeyManager.CreateNew(out _, password, Network.RegTest);
 
-			var keyManager2 = KeyManager.CreateNew(out _, password);
+			var keyManager2 = KeyManager.CreateNew(out _, password, Network.RegTest);
 
 			// 5. Create chaumian coinjoin client.
 			var chaumianClient = new CcjClient(synchronizer, network, keyManager, new Uri(RegTestFixture.BackendEndPoint), null);

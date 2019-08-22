@@ -88,7 +88,7 @@ namespace WalletWasabi.Tests
 			BitcoinStore bitcoinStore = new BitcoinStore();
 			await bitcoinStore.InitializeAsync(Path.Combine(Global.Instance.DataDir, nameof(TestServicesAsync)), network);
 
-			KeyManager keyManager = KeyManager.CreateNew(out _, "password");
+			KeyManager keyManager = KeyManager.CreateNew(out _, "password", Network.RegTest);
 			WasabiSynchronizer syncer = new WasabiSynchronizer(network, bitcoinStore, new Uri("http://localhost:12345"), Global.Instance.TorSocks5Endpoint);
 			WalletService walletService = new WalletService(
 				bitcoinStore,

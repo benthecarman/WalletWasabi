@@ -147,7 +147,7 @@ namespace WalletWasabi.Gui.Tabs.WalletManager
 						Logger.LogInfo<LoadWalletViewModel>("Creating new wallet file.");
 						var walletName = Global.GetNextHardwareWalletName(customPrefix: "Coldcard");
 						var walletFullPath = Global.GetWalletFullPath(walletName);
-						KeyManager.CreateNewHardwareWalletWatchOnly(mfp, extPubKey, walletFullPath);
+						KeyManager.CreateNewHardwareWalletWatchOnly(mfp, extPubKey, Global.Network, walletFullPath);
 						owner.SelectLoadWallet();
 					}
 				}
@@ -579,7 +579,7 @@ namespace WalletWasabi.Gui.Tabs.WalletManager
 					{
 						walletName = Global.GetNextHardwareWalletName(selectedWallet.HardwareWalletInfo);
 						var path = Global.GetWalletFullPath(walletName);
-						KeyManager.CreateNewHardwareWalletWatchOnly(selectedWallet.HardwareWalletInfo.MasterFingerprint.Value, extPubKey, path);
+						KeyManager.CreateNewHardwareWalletWatchOnly(selectedWallet.HardwareWalletInfo.MasterFingerprint.Value, extPubKey, Global.Network, path);
 					}
 				}
 

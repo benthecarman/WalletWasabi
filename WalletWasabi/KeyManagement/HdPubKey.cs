@@ -69,6 +69,25 @@ namespace WalletWasabi.KeyManagement
 			{
 				throw new ArgumentException(nameof(FullKeyPath));
 			}
+
+			int coinType = (int)FullKeyPath.Indexes[1];
+			foreach(var x in FullKeyPath.Indexes)
+			{
+				Console.WriteLine(x);
+			}
+			if (coinType == 0)
+			{
+				IsTestnet = false;
+			}
+			else if (coinType == 1)
+			{
+				IsTestnet = true;
+			}
+			else
+			{
+				Console.WriteLine(coinType);
+				throw new ArgumentException(nameof(FullKeyPath));
+			}
 		}
 
 		public void SetLabel(string label, KeyManager kmToFile = null)
@@ -106,6 +125,7 @@ namespace WalletWasabi.KeyManagement
 		public int Index { get; }
 		public KeyPath NonHardenedKeyPath { get; }
 		public bool IsInternal { get; }
+		public bool IsTestnet { get; }
 
 		public bool HasLabel { get; private set; }
 

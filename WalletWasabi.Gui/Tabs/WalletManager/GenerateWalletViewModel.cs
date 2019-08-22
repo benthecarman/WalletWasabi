@@ -60,7 +60,7 @@ namespace WalletWasabi.Gui.Tabs.WalletManager
 				{
 					PasswordHelper.Guard(Password);
 
-					KeyManager.CreateNew(out Mnemonic mnemonic, Password, walletFilePath);
+					KeyManager.CreateNew(out Mnemonic mnemonic, Password, Global.Network, walletFilePath);
 
 					Owner.CurrentView = new GenerateWalletSuccessViewModel(Owner, mnemonic);
 				}

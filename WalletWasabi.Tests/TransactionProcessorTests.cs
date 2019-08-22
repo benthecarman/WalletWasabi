@@ -301,7 +301,7 @@ namespace WalletWasabi.Tests
 
 		private static TransactionProcessor CreateTransactionProcessor()
 		{
-			var keyManager = KeyManager.CreateNew(out _, "password");
+			var keyManager = KeyManager.CreateNew(out _, "password", Network.RegTest);
 			keyManager.AssertCleanKeysIndexed();
 			return new TransactionProcessor(
 				keyManager,

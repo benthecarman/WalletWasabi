@@ -1,3 +1,4 @@
+using NBitcoin;
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
@@ -40,7 +41,7 @@ namespace WalletWasabi.Tests
 			string original = "    w¾3AÍ-dCdï×¾M\\Øò¹ãÔÕýÈÝÁÐ9oEp¨}r:SR¦·ßNó±¥*W!¢ê#ikÇå<ðtÇf·a\\]§,à±H7«®È4nèNmæo4.qØ-¾ûda¯ºíö¾,¥¢½\\¹õèKeÁìÍSÈ@r±ØÙ2[r©UQÞ¶xN\"?:Ö@°&\n";
 
 			// Creating a wallet with buggy password.
-			var keyManager = KeyManager.CreateNew(out _, buggy);
+			var keyManager = KeyManager.CreateNew(out _, buggy, Network.RegTest);
 
 			// Password should be formatted, before entering here.
 			Assert.Throws<FormatException>(() => PasswordHelper.GetMasterExtKey(keyManager, original, out _));
@@ -79,7 +80,7 @@ namespace WalletWasabi.Tests
 			Assert.True(PasswordHelper.IsTrimable(buggy, out buggy));
 
 			// Creating a wallet with buggy password.
-			var keyManager = KeyManager.CreateNew(out _, buggy);
+			var keyManager = KeyManager.CreateNew(out _, buggy, Network.RegTest);
 
 			Assert.True(PasswordHelper.IsTrimable(original, out original));
 

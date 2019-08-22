@@ -74,7 +74,7 @@ namespace WalletWasabi.Gui.Tabs.WalletManager
 					try
 					{
 						var mnemonic = new Mnemonic(MnemonicWords);
-						KeyManager.Recover(mnemonic, Password, walletFilePath, keyPath, MinGapLimit);
+						KeyManager.Recover(mnemonic, Password, Global.Network, walletFilePath, keyPath, MinGapLimit);
 
 						owner.SelectLoadWallet();
 					}
